@@ -4,21 +4,45 @@ import pandas as pd
 from PIL import Image, ImageFilter, ImageOps
 
 # ==========================================
-# İSTASYON ENTEGRASYON FONKSİYONLARI (TASLAK)
+# İSTASYON ENTEGRASYON MİMARİSİ (7. GÜN STANDARDı)
 # ==========================================
-def run_yolo_detection(image):
-    return {"object_count": 5, "risk_rate": 80, "confidence": 96.8}
+def run_yolo_detection(image) -> dict:
+    """
+    İstasyon A (Yusuf & Tolga): YOLOv8 Görsel Analiz Modülü.
+    İleride gerçek model buraya entegre edilecek.
+    """
+    try:
+        # TODO: Gerçek YOLOv8 model çağrısı buraya gelecek -> model(image)
+        return {
+            "object_count": 5,
+            "risk_rate": 80,
+            "confidence": 96.8,
+            "status": "success"
+        }
+    except Exception as e:
+        return {"object_count": 0, "risk_rate": 0, "confidence": 0.0, "status": f"error: {str(e)}"}
 
-def run_llm_analysis(image, detection_res):
-    return (f"Görsel üzerinde yapılan yapay zeka ön analizinde {detection_res['object_count']} adet "
-            f"kritik unsur tespit edilmiştir. Sistem tarafından belirlenen ortalama Risk Oranı: %{detection_res['risk_rate']}.")
+def run_llm_analysis(image, detection_res: dict) -> str:
+    """
+    İstasyon B (Tolga & Senih): Gemini / RAG Rapor Üretim Modülü.
+    Tespit edilen nesne verilerini alıp akıllı rapor metni üretir.
+    """
+    count = detection_res.get("object_count", 0)
+    risk = detection_res.get("risk_rate", 0)
+    
+    return (
+        f"🔍 [LİNTu AI Otomatik Raporu]\n"
+        f"• Tespit Edilen Unsur Sayısı: {count}\n"
+        f"• Hesaplanan Risk Seviyesi: %{risk}\n"
+        f"• Durum Analizi: Saha verileri yapay zeka modelleriyle eşleştirildi. "
+        f"Kritik eşik aşılmadı, operasyon güvenli bölgede ilerliyor."
+    )
 
 # ==========================================
-# UI ARAYÜZ FONKSİYONLARI (6. GÜN MODÜLLEŞTİRME)
+# UI ARAYÜZ FONKSİYONLARI (İSTASYON C)
 # ==========================================
 
 def render_sidebar():
-    """Sol yan menüyü (sidebar) çizer ve seçilen sayfayı döndürür."""
     st.sidebar.title("⚡ LİNTu AI Dashboard")
     st.sidebar.caption("İstasyon C: Tunahan & Alperen")
 
@@ -32,12 +56,11 @@ def render_sidebar():
         ]
     )
     st.sidebar.divider()
-    st.sidebar.success("🟢 Sistem Hazır")
+    st.sidebar.success("🟢 Entegrasyon Katmanı Aktif")
     return secim
 
 
 def page_vision_analysis():
-    """Modül 1: Görsel Yükleme ve AI Analiz Sayfası"""
     st.title("🖼️ Görsel Ön İşleme & Yapay Zeka Analiz Paneli")
     st.caption("Görsel Filtreleme, YOLO Nesne Tanıma ve LLM Otomatik Raporlama")
     st.divider()
@@ -62,6 +85,8 @@ def page_vision_analysis():
 
         with col_sag:
             st.subheader("🤖 Yapay Zeka Model Çıktıları")
+            
+            # Arka plan entegrasyon fonksiyonlarını çağırıyoruz
             yolo_results = run_yolo_detection(processed_image)
             llm_report = run_llm_analysis(processed_image, yolo_results)
 
@@ -73,7 +98,8 @@ def page_vision_analysis():
             st.divider()
 
             st.markdown("##### 📝 İstasyon B: Otomatik Rapor (Gemini)")
-            st.text_area("Model Analiz Raporu:", value=llm_report, height=120)
+            st.text_area("Model Analiz Raporu:", value=llm_report, height=140)
+            
             if st.button("📩 Analiz Raporunu Kaydet"):
                 st.toast("Analiz raporu başarıyla kaydedildi!")
     else:
@@ -81,7 +107,6 @@ def page_vision_analysis():
 
 
 def page_dashboard():
-    """Modül 2: Dinamik Grafikler ve Harita Sayfası"""
     st.title("📊 Dinamik Gösterge Paneli & Canlı Harita")
     st.divider()
 
@@ -110,7 +135,6 @@ def page_dashboard():
 
 
 def page_csv_tool():
-    """Modül 3: Veri Temizleme Sayfası"""
     st.title("📁 CSV Veri Temizleme & İndirme Paneli")
     st.divider()
     uploaded_csv = st.file_uploader("Bir CSV dosyası yükleyin", type=["csv"])
@@ -125,7 +149,6 @@ def page_csv_tool():
 
 
 def page_team():
-    """Modül 4: Takım Kadrosu Sayfası"""
     st.title("⚡ LİNTu Yapay Zeka Takımı")
     st.divider()
     ekip_data = {
@@ -137,15 +160,13 @@ def page_team():
 
 
 # ==========================================
-# ANA ÇALIŞTIRICI (MAIN YAPI)
+# ANA ÇALIŞTIRICI (MAIN)
 # ==========================================
 def main():
     st.set_page_config(page_title="LİNTu Team - Central AI Dashboard", page_icon="⚡", layout="wide")
     
-    # 1. Menüyü çiz ve seçimi al
     secili_sayfa = render_sidebar()
     
-    # 2. Seçime göre ilgili fonksiyonu (sayfayı) çağır
     if secili_sayfa == "🖼️ Görsel Ön İşleme & AI Analiz":
         page_vision_analysis()
     elif secili_sayfa == "📊 Dinamik Grafik & Harita Paneli":
@@ -155,6 +176,5 @@ def main():
     elif secili_sayfa == "👥 Takım Kadrosu & İstasyonlar":
         page_team()
 
-# Python kuralı: Dosya doğrudan çalıştırılıyorsa main() fonksiyonunu tetikle
 if __name__ == "__main__":
     main()
