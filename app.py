@@ -212,3 +212,32 @@ elif secim == "👥 Takım Kadrosu & İstasyonlar":
         "Kullandığı Araçlar": ["YOLOv8 / OpenCV", "Gemini API", "Prompt Eng.", "Streamlit / UI", "Plotly / Dashboard", "Kaggle / Pandas"]
     }
     st.table(pd.DataFrame(ekip_data))
+    st.markdown("---")
+st.header("🎛️ AI Analiz Kontrol Paneli")
+
+# 1. Üstteki 3'lü Havalı Metrikler (5. Gün Görevi)
+m1, m2, m3 = st.columns(3)
+m1.metric("Tespit Edilen Nesne", "5", "+2 (Artış)")
+m2.metric("Sistem Güveni", "%92", "+%4")
+m3.metric("Risk Oranı", "%12", "-5% (Düşüş)")
+
+st.markdown("---")
+
+# 2. Yan Yana Fotoğraf ve Sonuç Ekranı (4. Gün Görevi)
+resim_sol, sonuc_sag = st.columns(2)
+
+with resim_sol:
+    st.subheader("📸 Yüklenen Görsel")
+    up = st.file_uploader("Fotoğraf Yükle", type=["jpg", "png", "jpeg"])
+    if up is not None:
+        st.image(up, use_container_width=True)
+
+with sonuc_sag:
+    st.subheader("🧠 Yapay Zeka Çıktısı")
+    if up is not None:
+        st.success("✅ Görüntü başarıyla işlendi!")
+        st.info("Bulunan Nesneler: Araba (2), İnsan (3)")
+        st.write("*(Not: İleride YOLOv8 modelimizi bağladığımızda gerçek sonuçlar burada akacak!)*")
+    else:
+        st.warning("👈 Analiz için soldan bir görsel yükleyin.")
+    
