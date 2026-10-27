@@ -2,41 +2,8 @@ import streamlit as st
 import plotly.express as px
 import pandas as pd
 from PIL import Image, ImageFilter, ImageOps
-
-# ==========================================
-# İSTASYON ENTEGRASYON MİMARİSİ (7. GÜN STANDARDı)
-# ==========================================
-def run_yolo_detection(image) -> dict:
-    """
-    İstasyon A (Yusuf & Tolga): YOLOv8 Görsel Analiz Modülü.
-    İleride gerçek model buraya entegre edilecek.
-    """
-    try:
-        # TODO: Gerçek YOLOv8 model çağrısı buraya gelecek -> model(image)
-        return {
-            "object_count": 5,
-            "risk_rate": 80,
-            "confidence": 96.8,
-            "status": "success"
-        }
-    except Exception as e:
-        return {"object_count": 0, "risk_rate": 0, "confidence": 0.0, "status": f"error: {str(e)}"}
-
-def run_llm_analysis(image, detection_res: dict) -> str:
-    """
-    İstasyon B (Tolga & Senih): Gemini / RAG Rapor Üretim Modülü.
-    Tespit edilen nesne verilerini alıp akıllı rapor metni üretir.
-    """
-    count = detection_res.get("object_count", 0)
-    risk = detection_res.get("risk_rate", 0)
-    
-    return (
-        f"🔍 [LİNTu AI Otomatik Raporu]\n"
-        f"• Tespit Edilen Unsur Sayısı: {count}\n"
-        f"• Hesaplanan Risk Seviyesi: %{risk}\n"
-        f"• Durum Analizi: Saha verileri yapay zeka modelleriyle eşleştirildi. "
-        f"Kritik eşik aşılmadı, operasyon güvenli bölgede ilerliyor."
-    )
+from src.vision_module import run_yolo_detection
+from src.llm_module import run_llm_analysis
 
 # ==========================================
 # UI ARAYÜZ FONKSİYONLARI (İSTASYON C)
